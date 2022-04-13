@@ -1,0 +1,19 @@
+04/13/22_13:54:53 - executor - WARNING - _skip_updates: 358 - Updates were skipped successfully.
+04/13/22_14:04:40 - executor - WARNING - _skip_updates: 358 - Updates were skipped successfully.
+04/13/22_14:33:12 - executor - WARNING - _skip_updates: 358 - Updates were skipped successfully.
+04/13/22_14:36:35 - dispatcher - ERROR - start_polling: 390 - Cause exception while getting updates.
+Traceback (most recent call last):
+  File "C:\Users\1\PycharmProjects\bot4\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 385, in start_polling
+    allowed_updates=allowed_updates
+  File "C:\Users\1\PycharmProjects\bot4\venv\lib\site-packages\aiogram\bot\bot.py", line 110, in get_updates
+    result = await self.request(api.Methods.GET_UPDATES, payload)
+  File "C:\Users\1\PycharmProjects\bot4\venv\lib\site-packages\aiogram\bot\base.py", line 232, in request
+    proxy=self.proxy, proxy_auth=self.proxy_auth, timeout=self.timeout, **kwargs)
+  File "C:\Users\1\PycharmProjects\bot4\venv\lib\site-packages\aiogram\bot\api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "C:\Users\1\PycharmProjects\bot4\venv\lib\site-packages\aiogram\bot\api.py", line 119, in check_result
+    exceptions.ConflictError.detect(description)
+  File "C:\Users\1\PycharmProjects\bot4\venv\lib\site-packages\aiogram\utils\exceptions.py", line 140, in detect
+    raise err(cls.text or description)
+aiogram.utils.exceptions.TerminatedByOtherGetUpdates: Terminated by other getupdates request; make sure that only one bot instance is running
+04/13/22_16:14:12 - executor - WARNING - start_polling: 329 - Goodbye!
