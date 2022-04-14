@@ -3,6 +3,8 @@ import string, random
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from db import Database
 
+
+# в идеале убрать глобальные переменные переписать как набор фукций и переменных
 # здесь хранится вся выгрузка книг
 data = dict()
 
@@ -31,10 +33,15 @@ my_god = 97875888
 # id админов
 admins_ids = {406750498}
 
+#id чата  где отвечают на вопросы
 question_chat_id = -795883018
 
+#названия файла обновлений
 UPDATE_FILE_NAME = "books_for_tlg.xlsx"
+#сколько книг выводится в одной отправке
 BOOKS_COUNT_ON_MSG = 6
+
+# проверка на отсуствие ссылки или картинки
 NONE_SET = {"nan", "None", None, "", " "}
 SELECT_AGES = [("0 - 1", "ages_0-1"), ("2 - 3", "ages_2-3"), ("4", "ages_4-4"), ("5", "ages_5-5"),
                ("6 - 7", "ages_6-7"), ("8 - 9", "ages_8-9"), ("10 - 11", "ages_10-11"), ("12 - 14", "ages_12-14"),

@@ -32,3 +32,13 @@ class IsNotAdmin(Filter):
 
     async def check(self, message: types.Message):
         return message.from_user.id not in init_data.admins_ids
+
+
+class IsThisChat(Filter):
+    key = "is_this_chat"
+
+    def ___init__(self, is_this_chat):
+        self.is_this_chat = is_this_chat
+
+    async def check(self, message: types.Message):
+        return message.chat.id == init_data.question_chat_id

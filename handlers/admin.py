@@ -1,5 +1,5 @@
 from aiogram import types, Dispatcher
-from my_filters import IsAdmin, IsGod
+from my_filters import IsAdmin, IsGod, IsThisChat
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.dispatcher.filters import Text, IsReplyFilter
 from create_bot import dp, bot
@@ -259,6 +259,7 @@ async def admin_me(msg: types.Message):
             init_data.my_secret_token = init_data.gen_my_secret_token()
             await bot.send_message(init_data.my_god,
                                    f"Новый админ {msg.from_user.first_name} {msg.from_user.last_name} {msg.from_user.username}")
+            init_data.update_admins()
             await msg.reply("You are in admins")
     except Exception as e:
         await create_bot.send_debug_message(__name__, inspect.currentframe().f_code.co_name, e)
@@ -368,7 +369,13 @@ async def view_book_stat(msg: types.Message):
 
         for i, row in enumerate(sorted(book_stat, key=lambda tup: tup[1], reverse=True)):
             text += f"{i + 1}. {row[0]} - [ {row[1]} ]\n"
-        await msg.reply("Просмотры каждой книги с момента запуска на сегодня:\n" + text)
+
+        text = "Просмотры каждой книги с момента запуска на сегодня:\n" + text
+        if len(text) > 4096:
+            for x in range(0, len(text), 4096):
+                await bot.send_message(msg.from_user.id, text[x:x + 4096])
+        else:
+            await bot.send_message(msg.from_user.id, text)
     except Exception as e:
         await create_bot.send_debug_message(__name__, inspect.currentframe().f_code.co_name, e)
 
@@ -413,4 +420,5 @@ def register_handlers_admin(db: Dispatcher):
                                 commands=["how_many_users"], commands_prefix="!/")
     dp.register_message_handler(view_book_stat, IsAdmin(), chat_type=types.ChatType.PRIVATE,
                                 commands=["view_book_stat"], commands_prefix="!/")
-    dp.register_message_handler(reply_user_message, IsAdmin(), IsReplyFilter(True), content_types=types.ContentTypes.TEXT)
+    dp.register_message_handler(reply_user_message, IsThisChat(), IsAdmin(), IsReplyFilter(True),
+                                content_types=types.ContentTypes.TEXT)

@@ -33,6 +33,16 @@ async def moderate_message(msg: types.Message):
             # await msg.delete()
             return
 
+        text = ""
+        if msg.content_type in {ContentType.PHOTO, ContentType.VIDEO, ContentType.DOCUMENT}:
+            text = msg.caption
+        elif msg.content_type == ContentType.TEXT:
+            text = msg.text
+        elif msg.content_type == ContentType.NEW_CHAT_MEMBERS:
+            await msg.delete()
+        else:
+            return
+
         # check urls
         entities_types = set()
         for entity in msg.entities:
@@ -42,17 +52,6 @@ async def moderate_message(msg: types.Message):
             await ban_action_and_msg(msg, f" @{msg.from_user.username} Отправка ссылок в чат запрещена.", 10)
             # await msg.delete()
             # await bot.send_message(msg.chat.id, f" @{msg.from_user.username} Отправка ссылок в чат запрещена.")
-            return
-
-        text = ""
-        if msg.content_type in {ContentType.PHOTO, ContentType.VIDEO, ContentType.DOCUMENT}:
-            text = msg.caption
-        elif msg.content_type == ContentType.TEXT:
-            text = msg.text
-        elif msg.content_type == ContentType.NEW_CHAT_MEMBERS:
-            msg.delete()
-        else:
-            await bot.send_message(init_data.my_god, text=f'msg.type={msg.content_type}\n {msg}')
             return
 
         # check censor
