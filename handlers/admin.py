@@ -9,6 +9,7 @@ import openpyxl
 from aiogram.types.message import ContentType
 import create_bot
 import inspect
+from aiogram.types import InputFile
 
 
 # Чтобы загузить обновить базу книг отправьте books_for_tlg.xlsx
@@ -350,6 +351,7 @@ async def help_a(msg: types.Message):
     9. Если в чате ответить на сообщение пользователя командой /ban он будет исключён из чата
     10. По команде /how_many_users выдаст количество пользователей в базе
     11. Сколько каждую книги посмотрели /view_book_stat
+    12. Получить файлы данных(лог, бд, json, таблицу) /make_reserv_data
     
     Команды суперадмина
     1. /get_token - получить токен для добавления админа
@@ -390,7 +392,21 @@ async def how_many_users(msg: types.Message):
         await create_bot.send_debug_message(__name__, inspect.currentframe().f_code.co_name, e)
 
 
+#@dp.message_handler(IsAdmin(), chat_type=types.ChatType.PRIVATE,commands=["make_reserv_data"],commands_prefix="!/")
+async def make_reserv_data(msg: types.Message):
+    try:
+        await bot.send_document(msg.chat.id,InputFile("tlg_bot_database.db"))
+        await bot.send_document(msg.chat.id,InputFile("books.json"))
+        await bot.send_document(msg.chat.id,InputFile("bad_words.json"))
+        await bot.send_document(msg.chat.id,InputFile("mylog.log"))
+        await bot.send_document(msg.chat.id, InputFile("books_for_tlg.xlsx"))
+    except Exception as e:
+        await create_bot.send_debug_message(__name__, inspect.currentframe().f_code.co_name, e)
+
+
 def register_handlers_admin(db: Dispatcher):
+    dp.register_message_handler(make_reserv_data, IsAdmin(), chat_type=types.ChatType.PRIVATE,commands=["make_reserv_data"],
+                                commands_prefix="!/")
     dp.register_message_handler(handle_docs, IsAdmin(), chat_type=types.ChatType.PRIVATE, content_types=['document'])
     dp.register_message_handler(update_json, IsAdmin(), chat_type=types.ChatType.PRIVATE, commands=['update'],
                                 commands_prefix="!/")
