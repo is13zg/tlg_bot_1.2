@@ -10,7 +10,7 @@ from aiogram.types.message import ContentType
 
 
 # отправка сообщение и ограничение по времени
-async def ban_action_and_msg(tlg_msg, text, ban_msg, ban_time):
+async def ban_action_and_msg(tlg_msg, text, ban_msg, ban_time=5):
     try:
         await bot.send_message(init_data.my_god,
                                text=f" @{tlg_msg.from_user.username} написал:{text}\n его забанили")
@@ -28,19 +28,20 @@ async def moderate_message(msg: types.Message):
     try:
         # check forwarding
         if msg.is_forward():
-            await ban_action_and_msg(msg, f" @{msg.from_user.username} Пересылка сообщений запрещена.", 5)
-            # await bot.send_message(msg.chat.id, f" @{msg.from_user.username} Пересылка сообщений запрещена. Вы не сможете отправлять собщения в чат ")
-            # await msg.delete()
+            await ban_action_and_msg(msg, str(msg), f" @{msg.from_user.username} Пересылка сообщений запрещена.", 5)
             return
 
         text = ""
         if msg.content_type in {ContentType.PHOTO, ContentType.VIDEO, ContentType.DOCUMENT}:
-            text = msg.caption
+            text += msg.caption
         elif msg.content_type == ContentType.TEXT:
-            text = msg.text
+            text += msg.text
         elif msg.content_type == ContentType.NEW_CHAT_MEMBERS:
             await msg.delete()
         else:
+            return
+
+        if text == "":
             return
 
         # check urls
@@ -49,12 +50,12 @@ async def moderate_message(msg: types.Message):
             entities_types.add(entity.type)
 
         if set(entities_types).intersection(["url", "text_link"]) != set(""):
-            await ban_action_and_msg(msg, f" @{msg.from_user.username} Отправка ссылок в чат запрещена.", 10)
+            await ban_action_and_msg(msg, text, f" @{msg.from_user.username} Отправка ссылок в чат запрещена.", 10)
             # await msg.delete()
             # await bot.send_message(msg.chat.id, f" @{msg.from_user.username} Отправка ссылок в чат запрещена.")
             return
 
-        # check censor
+            # check censor
         censor_ru = Censor.get(lang='ru')
         censor_ls = censor_ru.clean_line(text)
         # мат нашелся
@@ -79,7 +80,7 @@ async def moderate_message(msg: types.Message):
 
         if (len({word.lower().translate(str.maketrans('', "", string.punctuation)) for word in
                  text.split(" ")}.intersection(init_data.bad_words)) != 0):
-            await ban_action_and_msg(msg, f" @{msg.from_user.username} ваше сообщение запрещено.", 10)
+            await ban_action_and_msg(msg, text, f" @{msg.from_user.username} ваше сообщение запрещено.", 10)
             return
     except Exception as e:
         await create_bot.send_debug_message(__name__, inspect.currentframe().f_code.co_name, e)
