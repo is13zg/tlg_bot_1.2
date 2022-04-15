@@ -190,6 +190,7 @@ async def process_callback_manage_msg_books(callback_query: types.CallbackQuery)
         await callback_query.message.edit_text(
             text='Выберите номер книги которая вас интересует \n\n' + text_books_names_list,
             reply_markup=temp_inline_markup)
+        await callback_query.answer("Список книг обновлен")
     except Exception as e:
         await create_bot.send_debug_message(__name__, inspect.currentframe().f_code.co_name, e)
 
