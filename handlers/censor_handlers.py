@@ -26,20 +26,20 @@ async def ban_action_and_msg(tlg_msg, text, ban_msg, ban_time=5):
 # @dp.message_handler(IsNotAdmin(), content_types=types.ContentTypes.ANY)
 async def moderate_message(msg: types.Message):
     try:
+
         # check forwarding
         if msg.is_forward():
             await ban_action_and_msg(msg, str(msg), f" @{msg.from_user.username} Пересылка сообщений запрещена.", 5)
             return
 
-        text = ""
-        if msg.content_type in {ContentType.PHOTO, ContentType.VIDEO, ContentType.DOCUMENT}:
-            text += msg.caption
-        elif msg.content_type == ContentType.TEXT:
-            text += msg.text
-        elif msg.content_type == ContentType.NEW_CHAT_MEMBERS:
+        if msg.content_type == ContentType.NEW_CHAT_MEMBERS:
             await msg.delete()
-        else:
-            return
+
+        text = ""
+        if msg.caption != None:
+            text += msg.caption + " "
+        if msg.text != None:
+            text += msg.text
 
         if text == "":
             return
@@ -51,8 +51,6 @@ async def moderate_message(msg: types.Message):
 
         if set(entities_types).intersection(["url", "text_link"]) != set(""):
             await ban_action_and_msg(msg, text, f" @{msg.from_user.username} Отправка ссылок в чат запрещена.", 10)
-            # await msg.delete()
-            # await bot.send_message(msg.chat.id, f" @{msg.from_user.username} Отправка ссылок в чат запрещена.")
             return
 
             # check censor
@@ -70,9 +68,6 @@ async def moderate_message(msg: types.Message):
                 else:
                     new_msg.append(old_ls_text[x])
             new_str = " ".join(new_msg)
-            # await msg.delete()
-            # await bot.send_message(msg.chat.id,
-            #                        f" @{msg.from_user.username} написал:\n" + new_str + "\nМат в чате запрещен.")
             await ban_action_and_msg(msg, text,
                                      f" @{msg.from_user.username} написал:\n" + new_str + "\nМат в чате запрещен.",
                                      10)
