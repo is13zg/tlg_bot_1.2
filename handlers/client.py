@@ -91,6 +91,7 @@ async def process_callback_delete_msg(callback_query: types.CallbackQuery):
             await bot.delete_message(callback_query.message.chat.id, int(ls[0]))
             if len(ls) == 2:
                 await bot.delete_message(callback_query.message.chat.id, int(ls[1]))
+        await callback_query.answer()
     except Exception as e:
         await create_bot.send_debug_message(__name__, inspect.currentframe().f_code.co_name, e)
 
